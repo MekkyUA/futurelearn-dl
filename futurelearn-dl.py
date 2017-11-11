@@ -582,7 +582,11 @@ def getCoursePage(course_id):
 ## -- Main: --------------------------------------------------------
 
 TMP_DIR = os.getenv('TMP_DIR', default='/tmp/FUTURELEARN_DL')
-OP_DIR  = os.getenv('OP_DIR',  default=os.getenv('HOME') + '/Education/FUTURELEARN')
+try:
+    OP_DIR  = os.getenv('OP_DIR',  default=os.getenv('HOME') + '/Education/FUTURELEARN')
+except TypeError:
+    from pathlib import Path
+    OP_DIR  = os.getenv('OP_DIR',  default=str(Path.home()) + '/Education/FUTURELEARN')
 
 debug(2, "Using temp   dir <{}>".format(TMP_DIR))
 debug(2, "Using Output dir <{}>".format(OP_DIR))
@@ -610,6 +614,7 @@ token, cookies = getToken(session, SIGNIN_URL)
 response = login(session, SIGNIN_URL, email, password, token, cookies)
 
 WEEKS = getCoursePage(course_id)
+WEEKS.sort() # For ascending sorting before downloading
 
 debug(1, "Downloading {}-week course '{}'".format(len(WEEKS), course_id))
 
